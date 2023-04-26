@@ -34,8 +34,57 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             return time;
         },
+        isYouHost: async function () {
+            const currentGuest = await this.getCurrentGuest();
+            return currentGuest.isHost;
+        },
         setTime: async (time = '') => {
             await db.collection("room").doc('wRpDZ8eao8Cz1zaMuRK4').update({time})
+        },
+        exit: async function () {
+            const localUserId = this.getLocalUserId();
+            await this.removeUser(localUserId);
+        },
+        join: async function() {
+            const guests = await Room.getGuests();
+            const localUserId = this.getLocalUserId();
+            const userId = guests[localUserId];
+
+            if (!userId) {
+                await this.addUser();
+            }
+
+        },
+        getCurrentGuest: async function () {
+            const localUserId = this.getLocalUserId();
+            const guests = await Room.getGuests();
+            return guests[localUserId];
+        },
+        addUser: async function () {
+            const guests = await Room.getGuests();
+            const userData = await fetch('https://api.db-ip.com/v2/free/self');
+            const {ipAddress} = await userData.json();
+            const userId = this.setLocalUserId(ipAddress);
+
+            guests[userId] = {
+                isHost: false,
+                date: new Date(),
+            };
+
+            await db.collection("room").doc('wRpDZ8eao8Cz1zaMuRK4').update({guests})
+        },
+        removeUser: async function () {
+            const guests = await Room.getGuests();
+            delete guests[id];
+            await db.collection("room").doc('wRpDZ8eao8Cz1zaMuRK4').update({guests})
+        },
+        getLocalUserId: function () {
+            return localStorage.getItem('id');
+        },
+        setLocalUserId: function (ipAddress) {
+            const id = btoa(ipAddress + 'cHJha3Rpaw==');
+            localStorage.setItem('id', id);
+            return id;
         },
         getGuests: async () => {
             let guests = 0;
@@ -44,9 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 guests = doc.data().guests;
             });
             return guests;
-        },
-        setGuests: async (guests) => {
-            await db.collection("room").doc('wRpDZ8eao8Cz1zaMuRK4').update({guests})
         },
         listener: async (callback = () => {}) => {
             const room = await db.collection("room");
@@ -60,16 +106,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     window.room = Room;
 
-    const guests = await Room.getGuests() + 1;
+    await Room.join();
 
-
-    await Room.setGuests(guests);
-    let isYouHost = guests === 1;
-
+    let isYouHost = await Room.isYouHost();
 
     const seanceLength = 25; // Задаём длину сеанса в минутах
     let timeSec = seanceLength * 60;
-
 
 
     window.onload = function () {
@@ -80,7 +122,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (isYouHost) {
             startTimer()
         }
-
     });
 
     $('#stop').on('touchstart click', function () {
@@ -152,9 +193,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('beforeunload', async (event) => {
         event.preventDefault();
         event.returnValue = '';
-        const guests = await Room.getGuests();
+
         if (guests !== 0) {
-            await Room.setGuests(guests - 1);
+           Room.exit();
         } else {
             resetTimer()
         }
