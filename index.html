@@ -2814,11 +2814,14 @@
   color: #4a89dc;
   cursor: pointer;
 }
+.no_select {
+  user-select: none;
+}
 </style></head>
 <body >
-<div class="timer" id="timer">25:00</div>
-<div class="start" id="start" style="display: flex;">Старт!</div>
-<div class="stop" id="stop" style="display: none;">Стоп</div>
+<div class="timer no_select" id="timer">25:00</div>
+<div class="start no_select" id="start" style="display: flex;">Старт!</div>
+<div class="stop no_select" id="stop" style="display: none;">Стоп</div>
 
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono&display=swap");

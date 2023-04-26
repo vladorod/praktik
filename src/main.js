@@ -224,14 +224,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 
 
-    Room.listener(({guests, time}) => {
-        if (guests === 1) {
-            isYouHost = true;
-        }
-        if (guests === 0) {
-            resetTimer();
-        }
-
+    Room.listener(({time}) => {
+        Room.isYouHost().then((isHost) => {
+            isYouHost = isHost;
+        });
         document.getElementById('timer').innerHTML = time;
     })
 
