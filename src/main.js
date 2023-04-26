@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     const firebaseConfig = {
@@ -11,8 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const app = firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();;
     const db = firebase.firestore();
-
+    let timer;
 
     const Room = {
         isOccupied: async () => {
@@ -69,6 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             guests[userId] = {
                 isHost: false,
                 date: new Date(),
+                device: navigator.userAgent,
             };
 
             await db.collection("room").doc('wRpDZ8eao8Cz1zaMuRK4').update({guests})
@@ -109,6 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await Room.join();
 
     let isYouHost = await Room.isYouHost();
+    let userName = '';
 
     const seanceLength = 25; // Задаём длину сеанса в минутах
     let timeSec = seanceLength * 60;
@@ -119,19 +123,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     $('#start').on('touchstart click', function () {
+
         if (isYouHost) {
+            userName = new Date().toLocaleTimeString();
+            analytics.logEvent('entered_room', { name: userName });
             startTimer()
         }
     });
 
     $('#stop').on('touchstart click', function () {
+
         if (isYouHost) {
+            analytics.logEvent('left_room', { name: userName });
+            userName = '';
             resetTimer()
         }
 
     });
 
-    function startTimer() {
+    const startTimer = () => {
         Room.setOccupied(true);
         timer = setInterval(tickTimer, 1000);
     }
@@ -171,7 +181,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-
     function resetTimer() {
         Room.setOccupied(false);
         timer && clearInterval(timer);
@@ -180,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     Room.listener(({occupied}) => {
-        const isBusy = timer.textContent !== '25:00';
+        const isBusy = timer?.textContent !== '25:00';
         if (occupied && !isBusy) {
             startTimer()
         }
@@ -213,7 +222,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             stopTimerView()
         }
     })
-
 
 
     Room.listener(({guests, time}) => {
