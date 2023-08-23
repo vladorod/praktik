@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return localStorage.getItem("id");
     },
     setLocalUserId: function (ipAddress) {
-      const id = btoa(ipAddress + "cHJha3Rpaw==");
+      const id = btoa(ipAddress + "cHJha3Rpaw==" + navigator.userAgent);
       localStorage.setItem("id", id);
       return id;
     },

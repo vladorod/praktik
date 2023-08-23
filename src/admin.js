@@ -21,7 +21,7 @@ if (password === "adminLoh" || access) {
     const app = firebase.initializeApp(firebaseConfig);
     const analytics = firebase.analytics();
     const db = firebase.firestore();
-    let timer;
+    let originGuests = {};
 
     const Room = {
       isOccupied: async () => {
@@ -160,6 +160,7 @@ if (password === "adminLoh" || access) {
       const deviceIds = Object.keys(devices);
       const deviceContent = Object.values(devices);
       const container = document.querySelector("#container");
+      originGuests = deviceContent;
 
       const title = `<tr>
                 <th>ID</th>
@@ -190,8 +191,11 @@ if (password === "adminLoh" || access) {
         });
     };
 
-    Room.listener(() => {
-      updateDevices();
+    Room.listener((data) => {
+      const serverGuests = Object.values(data.guests);
+      if (!_.isEqual(serverGuests, originGuests)) {
+        updateDevices();
+      }
     });
   });
 }
