@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <table class="table">
+        <tbody id="container">
+
+        </tbody>
+    </table>
+    <script type="module" src="./src/admin.js"></script>
+    <script src="./assets/jquery-3.4.1.min.js"></script>
+</body>
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 20px;
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+    }
+
+    .table th {
+        font-weight: bold;
+        padding: 5px;
+        background: #efefef;
+        border: 1px solid #dddddd;
+    }
+
+    .table td {
+        border: 1px solid #dddddd;
+        padding: 5px;
+    }
+
+
+    .button7 {
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+        padding: .8em 1em calc(.8em + 3px);
+        border-radius: 3px;
+        background: rgb(64, 199, 129);
+        box-shadow: 0 -3px rgb(53, 167, 110) inset;
+        transition: 0.2s;
+        width: 100%;
+    }
+
+    .button7:hover {
+        opacity: 0.5;
+    }
+
+    .button7:active {
+
+        box-shadow: 0 3px rgb(33, 147, 90) inset;
+    }
+
+    .red {
+        background: rgb(255, 89, 89);
+        box-shadow: 0 -3px rgb(220, 0, 0) inset;
+    }
+</style>
+
+</html>
